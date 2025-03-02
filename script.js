@@ -23,13 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function fetchMessagesFromServer() {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve([...messages]);
-            }, 500);
-        });
-    }
+
 
     function getBotResponse(userMessage) {
         const botResponses = [
