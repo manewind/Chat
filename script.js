@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatForm = document.getElementById('chat-form');
     const messageInput = document.getElementById('message-input');
 
-    let messages = [];
+    const socket = new WebSocket('ws://localhost:8080'); 
 
     function addMessage(message, isUser) {
         const messageElement = document.createElement('div');
@@ -14,50 +14,42 @@ document.addEventListener('DOMContentLoaded', () => {
         chatWindow.scrollTop = chatWindow.scrollHeight;
     }
 
-    function sendMessageToServer(message) {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                messages.push({ text: message, isUser: true });
-                resolve();
-            }, 500);
-        });
+    // Функция для отображения уведомлений пользователю
+    function showNotification(message, isError = false) {
+        const notification = document.createElement('div');
+        notification.classList.add('notification');
+        notification.classList.add(isError ? 'error' : 'info');
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
     }
 
-
-
-    function getBotResponse(userMessage) {
-        const botResponses = [
-            "Привет! Как дела?",
-            "Интересно. Расскажи подробнее.",
-            "Понял. Что еще?",
-            "Здорово! Продолжай.",
-            "Спасибо за информацию!",
-        ];
-        return botResponses[Math.floor(Math.random() * botResponses.length)];
-    }
-
-    chatForm.addEventListener('submit', async (e) => {
+    chatForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const message = messageInput.value.trim();
         if (message) {
-            addMessage(message, true);
-            await sendMessageToServer(message);
-
-            setTimeout(() => {
-                const botMessage = getBotResponse(message);
-                addMessage(botMessage, false);
-                messages.push({ text: botMessage, isUser: false });
-            }, 1000);
-
-            messageInput.value = '';
+            if (socket.readyState === WebSocket.OPEN) {
+                socket.send(JSON.stringify({ text: message, isUser: true }));
+                addMessage(message, true);
+                messageInput.value = '';
+            } else {
+                showNotification('Ошибка: соединение с сервером не установлено.', true);
+            }
         }
     });
 
-    setInterval(async () => {
-        const messages = await fetchMessagesFromServer();
-        chatWindow.innerHTML = '';
-        messages.forEach(msg => {
-            addMessage(msg.text, msg.isUser);
-        });
-    }, 2000);
+    socket.addEventListener('message', (event) => {
+        const data = JSON.parse(event.data);
+        addMessage(data.text, data.isUser); 
+    });
+
+    socket.addEventListener('error', () => {
+        showNotification('Ошибка: не удалось подключиться к серверу.', true);
+    });
+
+    socket.addEventListener('close', () => {
+        showNotification('Соединение с сервером закрыто.', true);
+    });
 });
