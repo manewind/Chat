@@ -21,7 +21,7 @@ body {
     flex-direction: column;
     height: 80vh;
     position: relative;
-    border: 2px solid #007bff; /* Рамка вокруг контейнера */
+    border: 2px solid #007bff; 
 }
 
 
@@ -148,7 +148,6 @@ body {
     }
 }
 
-/* Адаптивность */
 @media (max-width: 600px) {
     .chat-container {
         height: 90vh;
