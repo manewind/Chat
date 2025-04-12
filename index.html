@@ -7,12 +7,23 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="chat-container">
-        <div id="chat-window"></div>
-        <form id="chat-form">
-            <input type="text" id="message-input" placeholder="Введите сообщение..." required>
-            <button type="submit" id="send-button">Отправить</button>
-        </form>
+    <div class="app-container">
+        <div class="sidebar">
+            <div id="name-section">
+                <input type="text" id="name-input" placeholder="Введите ваше имя..." required>
+                <button id="set-name-button">Установить имя</button>
+                <button id="edit-name-button" style="display: none;">Изменить имя</button>
+                <button id="clear-chat-button">Очистить чат</button>
+                <button id="change-background-button">Изменить фон</button>
+            </div>
+        </div>
+        <div class="chat-container">
+            <div id="chat-window"></div>
+            <form id="chat-form">
+                <input type="text" id="message-input" placeholder="Введите сообщение..." required disabled>
+                <button type="submit" id="send-button" disabled>Отправить</button>
+            </form>
+        </div>
     </div>
     <script src="script.js"></script>
 </body>
